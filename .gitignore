@@ -1,0 +1,12 @@
+/build/
+/hardware/
+/vitis/
+/.Xil/
+/*.xsa
+/*.bit
+/*.log
+/*.jou
+/*.str
+/ps7_init*
+/dfx_runtime.txt
+__pycache__/
