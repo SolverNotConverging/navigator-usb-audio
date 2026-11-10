@@ -42,31 +42,35 @@ at -12 dB and codec analog output at -15 dB; Windows can restore its saved volum
 
 ## Build and load
 
-Tools used: AMD Vivado and Vitis **2025.2**, installed under
-`C:/AMDDesignTools/2025.2`. Python is needed only for the optional host tests.
-Run these commands in PowerShell:
+Tools used: AMD Vivado and Vitis **2025.2**. Python is needed only for the optional
+host tests. In PowerShell, replace the two placeholder paths below with an
+appropriate project location and your AMD tools installation directory. The
+tools directory must contain the `Vivado` and `Vitis` subdirectories.
 
 ```powershell
-# First build after cloning from GitHub.
-git clone https://github.com/SolverNotConverging/navigator-usb-audio.git
-Set-Location navigator-usb-audio
-./scripts/build.ps1 -Hardware -Program
+# Choose paths appropriate for your computer before running these commands.
+$projectPath = 'C:/path/to/your/project'
+$toolsRoot = 'C:/path/to/AMD/tools/2025.2'
+
+# First build after cloning from GitHub into your chosen directory.
+git clone https://github.com/SolverNotConverging/navigator-usb-audio.git $projectPath
+Set-Location $projectPath
+./scripts/build.ps1 -ToolsRoot $toolsRoot -Hardware -Program
 
 # Usual edit/build/load cycle; uses the already-built hardware and platform.
-./scripts/build.ps1 -Program
+./scripts/build.ps1 -ToolsRoot $toolsRoot -Program
 
 # Compile C++ only, without changing the running board.
-./scripts/build.ps1
+./scripts/build.ps1 -ToolsRoot $toolsRoot
 
 # Full rebuild from the checked-in source scripts, then load.
-./scripts/build.ps1 -Hardware -Program
+./scripts/build.ps1 -ToolsRoot $toolsRoot -Hardware -Program
 ```
 
-If you already have the project locally, open PowerShell in its `usb_audio`
+If you already have the project locally, set `$projectPath` to its existing
 directory and skip the clone step. Generated hardware, BSPs and binaries are
 excluded from the repository; the first build regenerates them.
 
-Use `-ToolsRoot 'D:/AMDDesignTools/2025.2'` for a different installation path.
 Use `-Platform` to regenerate the Vitis platform from an existing `usb_audio.xsa`.
 The scripts check command exit codes. A hardware build takes several minutes.
 
@@ -86,7 +90,7 @@ repeated after a power cycle. These scripts do not install a boot image.
 python tests/test_descriptors.py
 python scripts/test_playback.py --seconds 5
 python scripts/test_playback.py --seconds 60 --silence
-& C:/AMDDesignTools/2025.2/Vitis/bin/xsct.bat scripts/status.tcl
+& "$toolsRoot/Vitis/bin/xsct.bat" scripts/status.tcl
 ```
 
 The playback script selects Navigator explicitly. Its audible test sends a quiet
@@ -141,3 +145,10 @@ with the startup limitation above, rather than a finished USB audio product.
 The firmware sets ISO queue-head `Mult=1`, as required by the controller, after
 the AMD driver initializes the queues. Feedback is queued before acknowledging
 the streaming alternate setting so the first host feedback poll has data ready.
+
+## License
+
+This project is available under the [MIT License](LICENSE). Included AMD driver
+files retain their own copyright notices and [MIT license](third_party/LICENSE.amd.txt).
+AMD development tools and generated platform libraries remain subject to their
+respective licenses.
